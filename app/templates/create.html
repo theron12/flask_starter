@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block main %}
+    
+    <div class="outcontain">
+        <h2>Add New Property</h2>
+        {% for field, errors in form.errors.items() %}
+                <small class="form-text text-muted ">
+                    {{ ', '.join(errors) }}
+                </small>
+        {% endfor %}
+    <div class="mcontain">
+    <form method="POST" action="{{ url_for('createp') }}" enctype="multipart/form-data">
+        
+        {{ form.csrf_token }}
+        
+        <div class="lab">
+        <label>{{ form.title.label }}</label>
+        {{ form.title(size=30, class="formfield2")}}
+        </div>
+
+        <div class="lab">
+        <label>{{ form.description.label }}</label>
+         {{ form.description(size=20, class="descbox") }}
+        </div>
+
+        <div class="lab2">
+            <div class="lab">
+                <label>{{ form.rooms.label }}</label>
+                {{ form.rooms(size=15, class="formfield") }}
+                
+            </div>
+                        
+            <div class="lab">
+                <label>{{ form.bathrooms.label }}</label>
+                {{ form.bathrooms(size=15, class="formfield") }}
+            </div>
+            <div class="lab">
+                <label>{{ form.price.label }}</label>
+                {{ form.price(size=15, class="formfield") }}
+            </div>
+            <div class="lab">
+                <label>{{ form.ptype.label }}</label>
+                {{ form.ptype( class="formfield") }}
+            </div>
+            <div class="lab">
+                <label>{{ form.location.label }}</label>
+                {{ form.location(size=15, class="formfield") }}
+            </div>
+        </div>
+
+      
+        <div class="lab">
+            <label>{{ form.photo.label }}</label>
+            {{ form.photo(class="fileupbtn") }}
+        </div>
+
+        <button type="submit" class="subbutton">Add Property</button>
+    </form>
+    </div>
+    </div>
+{% endblock %}
