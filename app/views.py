@@ -2,7 +2,7 @@
 Flask Documentation:     https://flask.palletsprojects.com/
 Jinja2 Documentation:    https://jinja.palletsprojects.com/
 Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
-This file contains the routes for your application.
+This file creates your application.
 """
 
 from app import app
@@ -24,10 +24,62 @@ def about():
     """Render the website's about page."""
     return render_template('about.html', name="Mary Jane")
 
+@app.route('/properties/create',methods=["GET","POST"])
+def create():
+    myform=PropertyForm()
+    if request.method=="POST":
+        if myform.validate_on_submit():
+            title=myform.title.data
+            desc=myform.description.data
+            rooms=myform.rooms.data
+            bathrooms=myform.bathrooms.data
+            price=myform.price.data
+            ptype=dict(myform.ptype.choices).get(myform.ptype.data)
+            #print(ptype)
+            loc=myform.location.data
+            photo=myform.photo.data
 
-###
-# The functions below should be applicable to all Flask apps.
-###
+            #saving photo to file
+            filename=secure_filename(photo.filename)
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            #saving property to database
+            prop=Property(title,desc,rooms,bathrooms,price,ptype,loc,filename)
+            db.session.add(prop)
+            db.session.commit()
+            
+            # success flash message
+            flash("Property added","success")
+
+            #redirect to properties page
+            return redirect(url_for('properties'))        
+        else:
+            #flash_errors(myform)
+            return render_template('createp.html',form=myform)
+   
+    else:
+        return render_template('createp.html',form=myform)
+
+@app.route('/properties',methods=["GET"])
+def properties():
+     # retrieve list of properties
+    proplist=db.session.query(Property).all()
+   
+    # return render template properties
+    return render_template('properties.html',plist=proplist)
+
+@app.route('/properties/<pid>') 
+def showproperty(pid):
+    p=Property.query.get(pid)
+    return render_template('showprop.html',property=p)
+
+@app.route('/property/image/<filename>')
+def get_image(filename):
+    #print("IMG URL"+os.getcwd())
+    return send_from_directory(os.getcwd()+"/"+app.config['UPLOAD_FOLDER'],filename)
+
+
+
 
 # Display Flask WTF errors as Flash messages
 def flash_errors(form):
@@ -61,3 +113,9 @@ def add_header(response):
 def page_not_found(error):
     """Custom 404 page."""
     return render_template('404.html'), 404
+
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True,host="0.0.0.0",port="8080")
