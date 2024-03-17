@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block css %} 
+<link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"
+      integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V"
+      crossorigin="anonymous"
+    />
+{% endblock%}
+{% block main %}
+<h1 class="page-header">Properties</h1>
+
+{% include 'flash_messages.html' %}
+
+<div class="grid">
+    {% for prop in plist %}
+    <div class="prop">
+        <img src="{{url_for('get_image',filename=prop.photourl ) }}" class="propimg1">
+        <div class="info">
+        <h3 class="proptitle">{{ prop.title }}</h3>
+        <p class="proploc"><i class='fas fa-map-marker-alt'></i> {{ prop.location }}</p>
+        <p class="propprice">{{ prop.price }}</p>
+        </div>
+        <a class="viewprop" href="{{ url_for('showproperty',pid=prop.id ) }}">View Property</a>
+    </div>
+    {%endfor%}
+</div>
+{% endblock %}
